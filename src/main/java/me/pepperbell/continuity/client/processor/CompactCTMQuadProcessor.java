@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -54,9 +55,10 @@ public class CompactCTMQuadProcessor extends ConnectingQuadProcessor {
 		ArrayUtils.shift(map[7], 1);
 	}
 
+	@Nullable
 	protected Sprite[] replacementSprites;
 
-	public CompactCTMQuadProcessor(Sprite[] sprites, ProcessingPredicate processingPredicate, ConnectionPredicate connectionPredicate, boolean innerSeams, Sprite[] replacementSprites) {
+	public CompactCTMQuadProcessor(Sprite[] sprites, ProcessingPredicate processingPredicate, ConnectionPredicate connectionPredicate, boolean innerSeams, @Nullable Sprite[] replacementSprites) {
 		super(sprites, processingPredicate, connectionPredicate, innerSeams);
 		this.replacementSprites = replacementSprites;
 	}
@@ -458,10 +460,10 @@ public class CompactCTMQuadProcessor extends ConnectingQuadProcessor {
 	protected int getSpriteIndex(int quadrantIndex, int connections) {
 		int index1 = quadrantIndex;
 		int index2 = (quadrantIndex + 3) % 4;
-		boolean connected1 = ((connections >> index1 * 2) & 1) == 1;
-		boolean connected2 = ((connections >> index2 * 2) & 1) == 1;
+		boolean connected1 = ((connections >>> index1 * 2) & 1) == 1;
+		boolean connected2 = ((connections >>> index2 * 2) & 1) == 1;
 		if (connected1 && connected2) {
-			if (((connections >> (index2 * 2 + 1)) & 1) == 1) {
+			if (((connections >>> (index2 * 2 + 1)) & 1) == 1) {
 				return 1;
 			}
 			return 4;
@@ -668,7 +670,7 @@ public class CompactCTMQuadProcessor extends ConnectingQuadProcessor {
 			return createProcessor(properties, sprites, replacementSprites);
 		}
 
-		public QuadProcessor createProcessor(CompactConnectingCTMProperties properties, Sprite[] sprites, Sprite[] replacementSprites) {
+		public QuadProcessor createProcessor(CompactConnectingCTMProperties properties, Sprite[] sprites, @Nullable Sprite[] replacementSprites) {
 			return new CompactCTMQuadProcessor(sprites, BaseProcessingPredicate.fromProperties(properties), properties.getConnectionPredicate(), properties.getInnerSeams(), replacementSprites);
 		}
 

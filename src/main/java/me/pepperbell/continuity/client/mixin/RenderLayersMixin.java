@@ -15,10 +15,20 @@ import net.minecraft.client.render.RenderLayers;
 public class RenderLayersMixin {
 	@Inject(method = "getBlockLayer(Lnet/minecraft/block/BlockState;)Lnet/minecraft/client/render/RenderLayer;", at = @At("HEAD"), cancellable = true)
 	private static void continuity$onHeadGetBlockLayer(BlockState state, CallbackInfoReturnable<RenderLayer> cir) {
-		if (ContinuityConfig.INSTANCE.customBlockLayers.get()) {
+		if (!CustomBlockLayers.isEmpty() && ContinuityConfig.INSTANCE.customBlockLayers.get()) {
 			RenderLayer layer = CustomBlockLayers.getLayer(state);
 			if (layer != null) {
 				cir.setReturnValue(layer);
+			}
+		}
+	}
+
+	@Inject(method = "getMovingBlockLayer(Lnet/minecraft/block/BlockState;)Lnet/minecraft/client/render/RenderLayer;", at = @At("HEAD"), cancellable = true)
+	private static void continuity$onHeadGetMovingBlockLayer(BlockState state, CallbackInfoReturnable<RenderLayer> cir) {
+		if (!CustomBlockLayers.isEmpty() && ContinuityConfig.INSTANCE.customBlockLayers.get()) {
+			RenderLayer layer = CustomBlockLayers.getLayer(state);
+			if (layer != null) {
+				cir.setReturnValue(layer == RenderLayer.getTranslucent() ? RenderLayer.getTranslucentMovingBlock() : layer);
 			}
 		}
 	}
